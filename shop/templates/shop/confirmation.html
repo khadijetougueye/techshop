@@ -1,0 +1,13 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h3 class="text-dark text-center badge-warning">Salut Mr/Mrs {{ name }}</h3>
+        <div class="alert alert-success" role="alert">
+            <p>Merci de nous faire confiance, {{ name }}.</p>
+            <p>Votre commande a été reçue avec succès. Vous serez livré(e) dans un délai d'une semaine.</p>
+            <p>Vous allez recevoir un SMS contenant notre numéro de Bankily ou de Ria afin que vous puissiez effectuer le paiement de votre montant.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

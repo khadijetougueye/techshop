@@ -1,0 +1,149 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-group" id="item-list">
+             <h3 class="text-center">Voici Votre liste commandée </h3>
+          </ul>
+    </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" id="items" name="items">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" class="form-control" placeholder="votre nom" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="exemple@gmail.com" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" class="form-control" placeholder="1234 Main St" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="tel">Telephone</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="indicatif">+222</span>
+                </div>
+                <input type="tel" id="tel" name="tel" class="form-control" placeholder="Votre numero de telephone" required>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="ville">Ville</label>
+            <input type="text" name="ville" id="ville" class="form-control" required>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="pays">Pays</label>
+            <select id="pays" name="pays" class="form-control" required>
+                <option selected disabled>Choisissez votre pays</option>
+                <option>Mauritanie</option>
+                <option>Senegal</option>
+                <option>Marocco</option>
+                <option>Algérie</option>
+                <option>Nigéria</option>
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <label for="zipcode">Zip</label>
+            <input name="zipcode" id="zipcode" type="text" class="form-control" required>
+        </div>       
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="total">Somme Total à payer</label>
+            <input name="total" id="total" type="text" readonly class="form-control bg-success text-white text-center" required>
+        </div>       
+    </div>
+    
+      <div class="form-group col-md-12">
+        <button type="submit" class="btn btn-primary btn-block">Commander</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+  if (localStorage.getItem('panier') == null) {
+    var panier = {};
+  } else {
+    panier = JSON.parse(localStorage.getItem('panier'));
+  }
+
+  var total = 0;
+  var nombre = 0;
+
+  for (item in panier) {
+    let nom = panier[item][1];
+    let quantite = panier[item][0];
+    let prix = panier[item][2];
+    nombre += quantite;
+    total += prix;
+
+    let itemString = `<li class="list-group-item d-flex justify-content-between align-items-center">
+              ${nom}
+               <span class="badge badge-primary badge-pill"> QTE: ${quantite}</span>
+               <span class="badge badge-success badge-pill"> ${prix} UM </span>
+            </li>`;
+    $('#item-list').append(itemString);
+  }
+
+  let itemNombre = `<li class="list-group-item d-flex justify-content-between align-items-center">
+              <b class ="bg-warning badge-pill"> PRIX ET QUANTITE TOTALE :</b>
+               <span class="badge badge-warning badge-pill">  TQTE: ${nombre}</span>
+               <span class="badge badge-warning badge-pill">  Total ${total} UM </span>
+            </li>`;
+  $('#item-list').append(itemNombre);
+  $('#total').val(total + " UM ");
+
+  $('#items').val(JSON.stringify(panier));
+
+  // Nettoyer le panier local après la commande
+  localStorage.removeItem('panier');
+  $('#pays').change(function() {
+    var paysSelected = $(this).val();
+    var indicatif;
+
+    // Assignez l'indicatif du pays en fonction de la sélection du pays
+    switch (paysSelected) {
+      case 'Mauritanie':
+        indicatif = '+222'; // Remplacez par l'indicatif correct pour la Mauritanie
+        break;
+      case 'Senegal':
+        indicatif = '+221'; // Remplacez par l'indicatif correct pour le Sénégal
+        break;
+      case 'Marocco':
+        indicatif = '+212'; // Remplacez par l'indicatif correct pour le Maroc
+        break;
+        case 'Algérie':
+        indicatif = '+213'; // Remplacez par l'indicatif correct pour le Maroc
+        break;
+        case 'Nigéria':
+        indicatif = '+234'; // Remplacez par l'indicatif correct pour le Maroc
+        break;
+      // Ajoutez d'autres cas pour les pays supplémentaires
+      default:
+        indicatif = ''; // Laissez vide par défaut ou ajoutez un indicatif par défaut
+    }
+
+    $('#tel').attr('placeholder', indicatif);
+
+// Mettez à jour l'indicatif affiché à côté du champ de saisie du numéro de téléphone
+$('#indicatif').text(indicatif)
+  });
+
+</script>
+{% endblock %}
